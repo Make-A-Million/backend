@@ -108,33 +108,3 @@ exports.getSingleCompany = CatchAsyncErrors(async (req, res, next) => {
     })
 });
 
-//add openings
-exports.addOpenings = CatchAsyncErrors(async (req, res, next) => {
-    const id = req.params.id;
-    const company = await Company.findById(id);
-
-    if (!company)
-        return next(new ErrorHandler("company not found", 400));
-
-    const {role, description, skills, salary, location, experience} = req.body;
-
-    const data = {
-        role,
-        description,
-        skills,
-        salary,
-        location,
-        experience,
-    }
-
-    company.openings.push(data);
-    company.save();
-
-    res.status(201).json({
-        success: true,
-        company
-    });
-});
-
-
-

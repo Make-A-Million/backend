@@ -9,22 +9,6 @@ const openingSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Please enter the description'],
     },
-    location: {
-        type: String,
-        required: [true, 'Please enter the location'],
-    },
-    salary: {
-        type: String,
-        required: [true, 'Please enter the salary'],
-    },
-    experience: {
-        type: String,
-        required: [true, 'Please enter the experience'],
-    },
-    skills: {
-        type: [String],
-
-    },
     company: {
         type: mongoose.Schema.ObjectId,
         ref: "Company",
