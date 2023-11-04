@@ -24,24 +24,6 @@ const companySchema = new mongoose.Schema({
         minLength: [8, 'Your password must be longer than 8 characters'],
         select: false, // This will not show the password in the response when we get the user by find methods
     },
-    openings: [{
-        role: String,
-        description: String,
-        location: String,
-        salary: Number,
-        experience: Number,
-        skills: [String],
-        applicants: [{
-            type: mongoose.Schema.ObjectId,
-            ref: "User",
-            required: true
-        }],
-        createdAt: {
-            type: Date,
-            default: Date.now,
-
-        },
-    }],
     createdAt: {
         type: Date,
         default: Date.now,

@@ -1,4 +1,5 @@
 const Company = require("../models/companyModel");
+const Opening = require("../models/openingsModel");
 const ErrorHandler = require("../utils/errorHandler");
 const CatchAsyncErrors = require("../middleware/catchAsyncErrors");
 const sendToken = require("../utils/jwtToken");
@@ -32,9 +33,7 @@ exports.registerCompany = CatchAsyncErrors(async (req, res, next) => {
     // });
 
     sendToken(company, 201, res);
-
 });
-
 
 // Login Company
 exports.loginCompany = CatchAsyncErrors(async (req, res, next) => {
@@ -60,7 +59,6 @@ exports.loginCompany = CatchAsyncErrors(async (req, res, next) => {
 
 });
 
-
 //Log out
 exports.logout = (req, res, next) => {
 
@@ -74,8 +72,6 @@ exports.logout = (req, res, next) => {
         message: "logged out"
     })
 }
-
-
 
 //get Company details
 exports.getCompany = CatchAsyncErrors(async (req, res, next) => {
@@ -99,7 +95,6 @@ exports.getAllCompanys = CatchAsyncErrors(async (req, res, next) => {
     })
 });
 
-
 //get single Company --admin
 exports.getSingleCompany = CatchAsyncErrors(async (req, res, next) => {
     const company = await Company.findById(req.params.id);
@@ -112,4 +107,34 @@ exports.getSingleCompany = CatchAsyncErrors(async (req, res, next) => {
         company
     })
 });
+
+//add openings
+exports.addOpenings = CatchAsyncErrors(async (req, res, next) => {
+    const id = req.params.id;
+    const company = await Company.findById(id);
+
+    if (!company)
+        return next(new ErrorHandler("company not found", 400));
+
+    const {role, description, skills, salary, location, experience} = req.body;
+
+    const data = {
+        role,
+        description,
+        skills,
+        salary,
+        location,
+        experience,
+    }
+
+    company.openings.push(data);
+    company.save();
+
+    res.status(201).json({
+        success: true,
+        company
+    });
+});
+
+
 

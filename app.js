@@ -58,8 +58,10 @@ app.use((req, res, next) => {
 
 
 const companyRouter = require("./routes/companyRoutes");
+const openingRouter = require("./routes/openingRoutes");
 
 app.use("/api/v1/company", companyRouter);
+app.use("/api/v1/opening", openingRouter);
 
 
 app.use(ErrorMiddleware);
