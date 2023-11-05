@@ -16,9 +16,7 @@ exports.registerUser = CatchAsyncErrors(async (req, res, next) => {
     });
 
     sendToken(user, 201, res);
-
 });
-
 
 // Login user
 exports.loginUser = CatchAsyncErrors(async (req, res, next) => {

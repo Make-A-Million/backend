@@ -35,7 +35,17 @@ const userSchema = new mongoose.Schema({
             enum: ["pending", "accepted", "rejected"],
         }
     }],
-
+    roomID: {
+        type: String,
+    },
+    prompts: [{
+        role: {
+            type: String,
+        },
+        content: {
+            type: String,
+        }
+    }],
     createdAt: {
         type: Date,
         default: Date.now,

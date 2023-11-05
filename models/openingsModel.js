@@ -14,8 +14,13 @@ const openingSchema = new mongoose.Schema({
         ref: "Company",
     },
     applicants: [{
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
+        id: {
+            type: mongoose.Schema.ObjectId,
+            ref: "User",
+        },
+        email: {
+            type: String,
+        },
     }],
     createdAt: {
         type: Date,

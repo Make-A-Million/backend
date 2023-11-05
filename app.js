@@ -60,11 +60,14 @@ app.use((req, res, next) => {
 const companyRouter = require("./routes/companyRoutes");
 const userRouter = require("./routes/userRoutes");
 const openingRouter = require("./routes/openingRoutes");
+const gptRouter = require("./routes/gptRoutes");
 
 
 app.use("/api/v1/company", companyRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/opening", openingRouter);
+app.use("/api/v1/gpt", gptRouter);
+
 app.use("/", (req, res) => res.status(200).json({message: "Welcome to the API"}));
 
 app.use(ErrorMiddleware);
