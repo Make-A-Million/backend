@@ -29,9 +29,11 @@ exports.newOpening = CatchAsyncErrors(async (req, res, next) => {
     console.log(applicants)
 
     applicants.map(async (applicant) => {
-        const user = await User.findById(applicant.id);
+        const user = await User.findById(applicant.user);
         user.roomID = generateRoomId();
-        user.prompts = generatePrompt(company.name, req.body.role, req.body.description, user.resume);
+        const prompts = await generatePrompt(company.name, req.body.role, req.body.description, user.resume);
+        console.log(prompts)
+        user.prompts = prompts;
         user.appliedJobs.push({
             company: id,
             status: "pending",
@@ -66,18 +68,67 @@ function randomString(length) {
     return result;
 }
 
-function generatePrompt(name, role, description, resume) {
-    return [{
-        "role": "system",
-        "content": `You are the interviewer for a ${role} position at ${name}. 
+async function generatePrompt(name, role, description, resume) {
+    let conversation = [
+        {
+            "role": "system",
+            "content": `You are the interviewer for a ${role} position at ${name}. 
                     Please consider the following job description and the candidate's resume:
                     Job Description:
                     ${description}
-                    
+                 
                     Candidate's Resume:
                     ${resume}`
-    },
-    ]
+        },
+        {
+            "role": "assistant",
+            "content": "Okay I will assess the persons skills, only ask one question at a time"
+
+        },
+        {
+            "role": "system",
+            "content": "The questions should assess the candidate's qualifications, skills, and experiences in alignment with the job requirements. Aim for a well-rounded set of questions that cover both technical and soft skills. Each question should be clear, specific, and designed to elicit detailed responses.\n" +
+                "Ask upto 10 questions and Feel free to provide a series of questions that you would typically ask in a real interview setting. Ask only one question at a time"
+        },
+        {
+            "role": "user",
+            "content": "Hi sir i'm ready"
+        },{
+            "role": "assistant",
+            "content": "Okay, let's begin. Let's begin with your first question"
+        }
+    ];
+
+
+    try {
+        const data = {
+            "messages": conversation,
+            "max_tokens": 100,
+            "temperature": 0,
+            "model": "gpt-3.5-turbo"
+        };
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+            },
+            body: JSON.stringify(data)
+        });
+        const json = await response.json();
+        // console.log(json)
+        // console.log(json.choices[0].message.content)
+        conversation.push({
+            "role": "assistant",
+            "content": json.choices[0].message.content
+        })
+        return conversation;
+    } catch (e) {
+        console.log(e)
+    }
+
+    return conversation;
 }
 
 

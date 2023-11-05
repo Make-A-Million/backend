@@ -27,18 +27,17 @@ exports.generateQuestion = CatchAsyncErrors(async (req, res, next) => {
 });
 
 exports.validateUserAnswer = CatchAsyncErrors(async (req, res, next) => {
-    const {question, answer} = req.body;
+    const {id, question, answer} = req.body;
 
-    const conversation = [
-        {
-            "role": "system",
-            "content": `This is the question , ${question}`
-        },
-        {
-            "role": "user",
-            "content": `${answer}`
-        },
-    ];
+    const user = await User.findById(id);
+
+    const conversation = user.prompts;
+
+    conversation.push({
+        "role": "user",
+        "content": answer
+    });
+
 
     try {
         const data = {
@@ -47,7 +46,6 @@ exports.validateUserAnswer = CatchAsyncErrors(async (req, res, next) => {
             "temperature": 0,
             "model": "gpt-3.5-turbo"
         };
-
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: {
@@ -57,9 +55,15 @@ exports.validateUserAnswer = CatchAsyncErrors(async (req, res, next) => {
             body: JSON.stringify(data)
         });
         const json = await response.json();
+        conversation.push({
+            "role": "assistant",
+            "content": json.choices[0].message.content
+        })
+        user.prompts = conversation;
+        await user.save();
         res.status(200).json({
             success: true,
-            json
+            next: json.choices[0].message.content
         });
     } catch (e) {
         res.status(500).json({
