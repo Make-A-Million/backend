@@ -1,10 +1,12 @@
 const express = require("express");
 const app = express();
 const dotenv = require("dotenv");
+const cors = require("cors");
 const ErrorMiddleware = require("./middleware/error");
 
 dotenv.config({ path: 'config/config.env' });
 app.use(express.json());
+app.use(cors());
 
 
 const RESET = '\x1b[0m';

@@ -29,7 +29,10 @@ const userSchema = new mongoose.Schema({
         required: [true, 'Please upload your resume'],
     },
     appliedJobs: [{
-        type: mongoose.Schema.ObjectId,
+        company: {
+            type: mongoose.Schema.ObjectId,
+            ref: "Company",
+        },
         status: {
             type: String,
             enum: ["pending", "accepted", "rejected"],

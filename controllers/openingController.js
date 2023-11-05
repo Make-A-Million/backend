@@ -8,6 +8,7 @@ const CatchAsyncErrors = require("../middleware/catchAsyncErrors");
 exports.newOpening = CatchAsyncErrors(async (req, res, next) => {
     const id = req.params.id;
 
+    console.log(req.body)
     const company = await Company.findById(id);
     if (!company)
         return next(new ErrorHandler("Company not found", 404));
@@ -17,19 +18,25 @@ exports.newOpening = CatchAsyncErrors(async (req, res, next) => {
     let applicants = [];
     for (let i = 0; i < applicantsEmail.length; i++) {
         const user = await User.findOne({email: applicantsEmail[i]});
-        if (user)
+        if (user) {
             applicants.push({
-                id: user._id,
+                user: user._id,
                 email: user.email,
             });
-
+        }
     }
+
+    console.log(applicants)
 
     applicants.map(async (applicant) => {
         const user = await User.findById(applicant.id);
         user.roomID = generateRoomId();
         user.prompts = generatePrompt(company.name, req.body.role, req.body.description, user.resume);
-        user.save();
+        user.appliedJobs.push({
+            company: id,
+            status: "pending",
+        });
+        await user.save();
     });
 
     const opening = await Opening.create({
