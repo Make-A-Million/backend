@@ -95,3 +95,14 @@ exports.getSingleUser = CatchAsyncErrors(async (req, res, next) => {
     })
 });
 
+
+exports.getUserByRoomId = CatchAsyncErrors(async (req, res, next) => {
+    const user = await User.findOne({roomId: req.params.id});
+    if(!user)
+        return next(new ErrorHandler("user not found", 400));
+    res.status(200).json({
+        success: true,
+        user
+    })
+})
+

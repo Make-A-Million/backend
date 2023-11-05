@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
     }],
     roomID: {
         type: String,
+        unique: true,
     },
     prompts: [{
         role: {
