@@ -33,6 +33,10 @@ const userSchema = new mongoose.Schema({
             type: mongoose.Schema.ObjectId,
             ref: "Company",
         },
+        score : {
+            type: Number,
+            default: 0,
+        },
         status: {
             type: String,
             enum: ["pending", "accepted", "rejected"],
@@ -40,7 +44,6 @@ const userSchema = new mongoose.Schema({
     }],
     roomID: {
         type: String,
-        unique: true,
     },
     prompts: [{
         role: {

@@ -27,21 +27,23 @@ exports.generateQuestion = CatchAsyncErrors(async (req, res, next) => {
 });
 
 exports.validateUserAnswer = CatchAsyncErrors(async (req, res, next) => {
-    const {id, question, answer} = req.body;
+    console.log(req.body)
+    const {id, prompt} = req.body;
 
     const user = await User.findById(id);
 
-    const conversation = user.prompts;
+    if(!user)
+        return next(new ErrorHandler("user not found", 404));
 
-    conversation.push({
-        "role": "user",
-        "content": answer
-    });
+    console.log(prompt)
 
+    prompt.map((p) => {
+        delete p._id;
+    })
 
     try {
         const data = {
-            "messages": conversation,
+            "messages": prompt,
             "max_tokens": 100,
             "temperature": 0,
             "model": "gpt-3.5-turbo"
@@ -55,11 +57,12 @@ exports.validateUserAnswer = CatchAsyncErrors(async (req, res, next) => {
             body: JSON.stringify(data)
         });
         const json = await response.json();
-        conversation.push({
+        console.log(json)
+        prompt.push({
             "role": "assistant",
             "content": json.choices[0].message.content
         })
-        user.prompts = conversation;
+        user.prompts = prompt;
         await user.save();
         res.status(200).json({
             success: true,
